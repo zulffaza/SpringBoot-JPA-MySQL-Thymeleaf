@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="UTF-8" />
+    <title>Add</title>
+</head>
+<body>
+    <h1>Add Data</h1>
+
+    <br />
+
+    <form th:action="@{/add}" th:object="${data}" method="post">
+        <table>
+            <input type="number" hidden="hidden" th:field="*{id}" th:value="${data.id}" />
+
+            <tr>
+                <td>
+                    <label th:text="NRP" />
+                </td>
+                <td>
+                    :
+                </td>
+                <td>
+                    <input type="number" th:field="*{nrp}" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label th:text="Name" />
+                </td>
+                <td>
+                    :
+                </td>
+                <td>
+                    <input type="text" th:field="*{name}" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" th:if="${data.id == 0}" th:value="Add" />
+                    <input type="submit" th:unless="${data.id == 0}" th:value="Edit" />
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

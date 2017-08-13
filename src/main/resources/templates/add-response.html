@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en">
+    <meta charset="UTF-8"/>
+    <title>Add Response</title>
+</head>
+<body>
+<h1 th:text="${messages}"></h1>
+
+<br/>
+
+<h5>Your data is : </h5>
+<table>
+<tr>
+    <td>
+        <label th:text="NRP"/>
+    </td>
+    <td>
+        :
+    </td>
+    <td>
+        <span th:text="${data.nrp}"/>
+    </td>
+</tr>
+<tr>
+    <td>
+        <label th:text="Name"/>
+    </td>
+    <td>
+        :
+    </td>
+    <td>
+        <span th:text="${data.name}"/>
+    </td>
+</tr>
+</table>
+
+<br />
+
+<a th:href="@{/}">
+    Home
+</a>
+
+</body>
+</html>
