@@ -1,32 +1,45 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Data;
+import com.example.demo.model.Response;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 @Controller
 public class DataController {
 
+    private ObjectMapper objectMapper;
     private RestTemplate restTemplate;
 
-    public DataController() {
+    @Autowired
+    public DataController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
         this.restTemplate = new RestTemplate();
     }
 
     @GetMapping("/")
     public String index(ModelMap modelMap) {
-        final String uri = "http://localhost:8080/getData";
-        ArrayList<Data> response = restTemplate.getForObject(uri, ArrayList.class);
+        String uri = "http://localhost:8080/getData";
+        JsonNode response = restTemplate.getForObject(uri, JsonNode.class);
 
-        modelMap.addAttribute("data", response);
+        try {
+            Response<ArrayList<Data>> data = objectMapper.readValue(objectMapper.treeAsTokens(response), new TypeReference<Response<ArrayList<Data>>>(){});
+            modelMap.addAttribute("data", data.getData());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
         modelMap.addAttribute("messages", "Hello Spring Boot");
 
         return "index";
@@ -49,29 +62,43 @@ public class DataController {
         if (result.hasErrors())
             return "add";
 
-        final String uri = "http://localhost:8080/saveData";
-        Data response = restTemplate.postForObject(uri, data, Data.class);
+        String uri = "http://localhost:8080/saveData";
+        JsonNode response = restTemplate.postForObject(uri, data, JsonNode.class);
 
-        modelMap.addAttribute("data", response);
+        try {
+            Response<Data> responseData = objectMapper.readValue(objectMapper.treeAsTokens(response), new TypeReference<Response<Data>>(){});
+            modelMap.addAttribute("data", responseData.getData());
 
+            if (responseData.getData() == null)
+                modelMap.addAttribute("messages", "Data failed saved");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        
         return "add-response";
     }
 
     @GetMapping("/show/{id}")
     public String show(@PathVariable int id, ModelMap modelMap) {
-        final String uri = "http://localhost:8080/getData/" + id ;
-        Data response = restTemplate.getForObject(uri, Data.class);
+        String uri = "http://localhost:8080/getData/" + id;
+        JsonNode response = restTemplate.getForObject(uri, JsonNode.class);
 
-        modelMap.addAttribute("data", response);
+        try {
+            Response<Data> data = objectMapper.readValue(objectMapper.treeAsTokens(response), new TypeReference<Response<Data>>(){});
+            modelMap.addAttribute("data", data.getData());
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
 
         return "add";
     }
 
-
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable int id) {
-        final String uri = "http://localhost:8080/deleteData/" + id ;
-        Void response = restTemplate.getForObject(uri, Void.class);
+        String uri = "http://localhost:8080/deleteData/" + id ;
+        restTemplate.delete(uri);
 
         return "redirect:/";
     }

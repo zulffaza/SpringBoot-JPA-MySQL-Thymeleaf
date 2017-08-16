@@ -11,7 +11,7 @@
 
     <form th:action="@{/add}" th:object="${data}" method="post">
         <table>
-            <input type="number" hidden="hidden" th:field="*{id}" th:value="${data.id}" />
+            <input type="number" th:field="*{id}" th:hidden="hidden"/>
 
             <tr>
                 <td>
@@ -21,7 +21,8 @@
                     :
                 </td>
                 <td>
-                    <input type="number" th:field="*{nrp}" />
+                    <input type="number" th:field="*{nrp}" th:if="${data.id != 0}" th:disabled="true" />
+                    <input type="number" th:field="*{nrp}" th:unless="${data.id != 0}" />
                 </td>
             </tr>
             <tr>
@@ -32,7 +33,7 @@
                     :
                 </td>
                 <td>
-                    <input type="text" th:field="*{name}" />
+                    <input th:field="*{name}" />
                 </td>
             </tr>
             <tr>

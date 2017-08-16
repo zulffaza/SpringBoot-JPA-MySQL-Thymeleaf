@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dao.DataDAO;
+import com.example.demo.repository.DataRepository;
 import com.example.demo.model.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,28 +10,30 @@ import java.util.ArrayList;
 @Service
 public class DataService {
 
-    private DataDAO dataDAO;
+    private DataRepository dataRepository;
 
-    public DataService(DataDAO dataDAO) {
-        this.dataDAO = dataDAO;
+    @Autowired
+    public DataService(DataRepository dataRepository) {
+        this.dataRepository = dataRepository;
     }
 
     public ArrayList<Data> getAllData(){
-        ArrayList<Data> data = new ArrayList<>();
-        dataDAO.findAll().forEach(data::add);
-
-        return data;
+        return new ArrayList<>(dataRepository.findAll());
     }
 
     public Data getData(int id) {
-        return dataDAO.findOne(id);
+        return dataRepository.findOne(id);
+    }
+
+    public Data getDataByNrp(int nrp) {
+        return dataRepository.findByNrp(nrp);
     }
 
     public Data saveData(Data data) {
-        return dataDAO.save(data);
+        return dataRepository.save(data);
     }
 
     public void deleteData(int id) {
-        dataDAO.delete(id);
+        dataRepository.delete(id);
     }
 }
